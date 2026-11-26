@@ -18,7 +18,7 @@
 | `e13` | KataGo 主幹向量的編碼器 |
 | `e21` | Strength Estimator（SE，中研院的棋力估計模型）特徵抽取 |
 | `e27` | 舊題 800 列的融合管線 |
-| `e29` | 訓練資料包（逐盤特徵與折角色） |
+| `e29` | 訓練資料包（逐盤特徵與所屬分組） |
 | `e34`、`e35`、`e36` | HumanSL 後半盤（第 61 到 120 手）掃描與 W120 表 |
 | `e38`、`e39`、`e40`、`e41` | 白化 LDA 度量與深度度量編碼器 |
 | `e52`、`e56`、`e62`、`e69` | 四代主幹向量抽取 |
@@ -239,7 +239,7 @@ top-1 改變的 10 題，是融合當時紀錄的數字，依 N = 5、10、15、
 .venv/bin/python -m scripts.experiments.e29.prep_bundle
 ```
 
-輸出 `.scratch/e29/bundle/{X.npy,aux.npz,manifest.json}`，內容是非保留集玩家的逐盤特徵與折角色。後面的 `e36`、`e40_finalprep`、`e55_prep` 都讀它。
+輸出 `.scratch/e29/bundle/{X.npy,aux.npz,manifest.json}`，內容是非保留集玩家的逐盤特徵與所屬分組。後面的 `e36`、`e40_finalprep`、`e55_prep` 都讀它。
 
 #### 3. HumanSL 落子統計（前 60 手、前 120 手）
 
