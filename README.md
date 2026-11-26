@@ -23,7 +23,7 @@ English: code for AI CUP 2026 Go, task 1 (identify the player behind a set of ga
 
 提交檔共 1,600 列。新題 800 列走上面這條管線，舊題 800 列（候選庫每人 100 盤黑棋）沿用較早定案的另一條管線。
 
-![Player 新題管線架構，橘框是依賴 KataGo HumanSL 的元件](docs/architecture.png)
+![Player 新題管線架構，橘框是用到外部預訓練模型的元件，其餘都是我們自己做的](docs/architecture.png)
 
 ## 快速開始
 
