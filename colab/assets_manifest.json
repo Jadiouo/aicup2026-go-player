@@ -1,0 +1,406 @@
+[
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "player_e04v2.pkl",
+  "dest": "data/models_final/player_e04v2.pkl",
+  "bytes": 795221,
+  "sha256": "8c9517ecd5ecfa7c07b44f59058a87c5b484c78801a3e3d4f1e44f78caab87e3",
+  "desc": "E04v2 reranker（含 H 重訓版）",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "player_e04v2.txt",
+  "dest": "data/models_final/player_e04v2.txt",
+  "bytes": 768457,
+  "sha256": "3b6d0f552d922aa54f78791cc140d331e67658d9173fe3e713850270f861b50f",
+  "desc": "同上的 LightGBM 文字檔",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "finh_full__final_model.pt",
+  "dest": ".scratch/e90/colab/finh_full/final_model.pt",
+  "bytes": 15930521,
+  "sha256": "fec071cad0cabc7aacbecbb81297dfc3ac87ca51e1b73bcbb01b0828252b2a59",
+  "desc": "S 認人網路（測試端；7,365 類）",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "finh_h0__final_model.pt",
+  "dest": ".scratch/e90/colab/finh_h0/final_model.pt",
+  "bytes": 14174873,
+  "sha256": "92ed8dd4a24ac3fc21d7bb69011ef3183d2ba2d2a76b88525e317d9934470eec",
+  "desc": "S 認人網路（交叉擬合 h0）",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "finh_h1__final_model.pt",
+  "dest": ".scratch/e90/colab/finh_h1/final_model.pt",
+  "bytes": 14185817,
+  "sha256": "59d95369e73e352ab5bd37108194f2af9db80ba85cfb79b2fecd81a3ed7cad5e",
+  "desc": "S 認人網路（交叉擬合 h1）",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "p1r_finh_h0__last.pt",
+  "dest": ".scratch/e127/p1r_finh_h0/last.pt",
+  "bytes": 4928727,
+  "sha256": "dc1e81a3fd47d580d59c97c4004c30ecc03a8a9f6b1277b6c96e08e001275814",
+  "desc": "Player 成對比對網路 h0（E127）",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "p1r_finh_h1__last.pt",
+  "dest": ".scratch/e127/p1r_finh_h1/last.pt",
+  "bytes": 4928727,
+  "sha256": "ff31fa32ca12ad3310b2d0c59b089fdb08ae4277c741c63e48303398a1ea8afc",
+  "desc": "Player 成對比對網路 h1",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "sigma_finh_h0.npy",
+  "dest": ".scratch/e127/sigma_finh_h0.npy",
+  "bytes": 640,
+  "sha256": "c2d4e033106b1d1df13acc3020b35fbabb56a42c499ef6ac35fc4264b6403ecb",
+  "desc": "E127 白化用逐維 std（h0）",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "sigma_finh_h1.npy",
+  "dest": ".scratch/e127/sigma_finh_h1.npy",
+  "bytes": 640,
+  "sha256": "12fe6e285f2355a9ea66db0094c6055937b20c3cb05acd10f26659992e0e22ad",
+  "desc": "同上（h1）",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "v7q_S.txt",
+  "dest": ".scratch/e90/final/make/models/v7q_S.txt",
+  "bytes": 1139907,
+  "sha256": "a51107e17bd7baab91e1cefb2ec7062d948adec460d1d9b67154f3e38c861297",
+  "desc": "Player 最終 LightGBM booster（792 特徵）",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "v7q_S.json",
+  "dest": ".scratch/e90/final/make/models/v7q_S.json",
+  "bytes": 430,
+  "sha256": "76cb81f7a33e0235cc45e4f7242ec55b07b88827594fc8bf88513d523b7641d8",
+  "desc": "booster 設定",
+  "sanitized": true
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "v7q_S_metric.npz",
+  "dest": ".scratch/e90/final/make/models/v7q_S_metric.npz",
+  "bytes": 1334402,
+  "sha256": "ab00d7dd5b77936b4d88d4a371dcceb4805fe2e251b21076e6823a4aa6c8f295",
+  "desc": "booster 用度量",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "v7q_S_blk.npz",
+  "dest": ".scratch/e90/final/make/models/v7q_S_blk.npz",
+  "bytes": 2326254,
+  "sha256": "a019653dec5c9883d29d8fa35ad8bd384a61dc70debf440c70cb8bade9ff4aa7",
+  "desc": "booster 用分塊度量",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "v7q_S_late.npz",
+  "dest": ".scratch/e90/final/make/models/v7q_S_late.npz",
+  "bytes": 968644,
+  "sha256": "4a57302e6be359c098eb8c128f17d5523c020f913a841cfc252ddf809bea90ed",
+  "desc": "booster 用後半盤度量",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "v7q_S_trk.npz",
+  "dest": ".scratch/e90/final/make/models/v7q_S_trk.npz",
+  "bytes": 1583044,
+  "sha256": "81bcf4144b95168525a89814317468ce158f90a5ce9516eeb6dd8e0c292c2060",
+  "desc": "booster 用主幹度量",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "v7q_S_trkhalf.npz",
+  "dest": ".scratch/e90/final/make/models/v7q_S_trkhalf.npz",
+  "bytes": 3172322,
+  "sha256": "a6e099a8080d2f4aa66cc70866afa90348b35c7b4642c070b049039101a5d021",
+  "desc": "booster 用後半盤主幹度量",
+  "sanitized": false
+ },
+ {
+  "category": "weights",
+  "final": false,
+  "asset": "finh_bigS_full__final_model.pt",
+  "dest": ".scratch/e99/nets/finh_full/final_model.pt",
+  "bytes": 62196265,
+  "sha256": "c6c5e6f9d2595477ae4b515c0178aca70769d9dc4b451a88e330ff02b0a56798",
+  "desc": "E99 大網路 S（16 層×224）finh_full，只當 X_lr 的向量來源（原 ASSETS 未列，本輪補）",
+  "sanitized": false
+ },
+ {
+  "category": "intermediate",
+  "final": true,
+  "asset": "player__real_v7q_S_pub.npz",
+  "dest": ".scratch/e90/final/make/real_v7q_S_pub.npz",
+  "bytes": 2016603,
+  "sha256": "6126bf56cd2e86b02cc324f758f1859476bebc12ca67e99a8209a41ddcd74c5e",
+  "desc": "Player：booster 分數 e、短名單 top、候選人 id（Public 池）"
+ },
+ {
+  "category": "intermediate",
+  "final": true,
+  "asset": "player__real_v7q_S_priv.npz",
+  "dest": ".scratch/e90/final/make/real_v7q_S_priv.npz",
+  "bytes": 2016892,
+  "sha256": "3695b13377e95778c34dcb9e50a2e48e1bde38243a9a892e412d81ea53c76b2f",
+  "desc": "Player：同上（Private 池）"
+ },
+ {
+  "category": "intermediate",
+  "final": true,
+  "asset": "player__real_X_pub.npz",
+  "dest": ".scratch/e112/final/real_X_pub.npz",
+  "bytes": 960604,
+  "sha256": "fb4f7809ccd4ccb59edf0fbe526e0f2330ec68d3f3212689830412444d714381",
+  "desc": "Player：X_e112（400×600）"
+ },
+ {
+  "category": "intermediate",
+  "final": true,
+  "asset": "player__real_X_priv.npz",
+  "dest": ".scratch/e112/final/real_X_priv.npz",
+  "bytes": 960604,
+  "sha256": "abe3d2b1651d9c22752f6e6c00d2c49111358fbd23476665f87c5b9b8e6ea696",
+  "desc": "Player：X_e112"
+ },
+ {
+  "category": "intermediate",
+  "final": true,
+  "asset": "player__real_Xlr_pub.npz",
+  "dest": ".scratch/e123/final/real_Xlr_pub.npz",
+  "bytes": 960256,
+  "sha256": "e361d49208639c93643dbb4c5e5df50718f0672c9612a9657dd8e45cddf3f939",
+  "desc": "Player：X_lr（400×600）"
+ },
+ {
+  "category": "intermediate",
+  "final": true,
+  "asset": "player__real_Xlr_priv.npz",
+  "dest": ".scratch/e123/final/real_Xlr_priv.npz",
+  "bytes": 960256,
+  "sha256": "314b278103de4c8cdb7caa5bbfb9301180664a4bf3adba2059d35c373095d1ee",
+  "desc": "Player：X_lr"
+ },
+ {
+  "category": "intermediate",
+  "final": true,
+  "asset": "player__real_Xp1r_pub.npz",
+  "dest": ".scratch/e127/final/real_Xp1r_pub.npz",
+  "bytes": 1091930,
+  "sha256": "16ae9ff320f071cc4e3864b51e27c67724912c72c8d42cf7041901f296f52599",
+  "desc": "Player：X_p1r（400×600）"
+ },
+ {
+  "category": "intermediate",
+  "final": true,
+  "asset": "player__real_Xp1r_priv.npz",
+  "dest": ".scratch/e127/final/real_Xp1r_priv.npz",
+  "bytes": 1091930,
+  "sha256": "6391db057321e96324f905486906a469c99083a31be68498aba1ea1833bb8622",
+  "desc": "Player：X_p1r"
+ },
+ {
+  "category": "intermediate",
+  "final": true,
+  "asset": "player__old_v6_800.csv",
+  "dest": ".scratch/e62/old_v6_800.csv",
+  "bytes": 55242,
+  "sha256": "b4eed172f033c7a20431c439216a4678022342765615d79610a1851764e98d10",
+  "desc": "Player：舊題 800 列（v6），原樣沿用"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "ref__player_v7x.csv",
+  "dest": "ref/player_v7x.csv",
+  "bytes": 115242,
+  "sha256": "b4ad40c24b5c6e991cc69bb08af060de23b3f68c96e64f5d7d79c36ca4c04643",
+  "desc": "Player 最終上傳檔"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "ref__player_v7w.csv",
+  "dest": "ref/player_v7w.csv",
+  "bytes": 115242,
+  "sha256": "21a6fde0813d452d4974be5051cafaf44cb264d6b8c10367c3d4afc7c78262e6",
+  "desc": "Player 前一版（--w-new 0 的比對目標）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "e27player_hsl_test_games.parquet",
+  "dest": "data/test_scan_e27player/hsl_test_games.parquet",
+  "bytes": 14433911,
+  "sha256": "d2cd1c51e411aee0238de198fe387d5e60da8aa4972eeafc9b88498bfad68b85",
+  "desc": "舊題 26,000 盤的 HSL 特徵表（v6 融合輸入）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "e27_v3_repro.csv",
+  "dest": ".scratch/e27/v3_repro.csv",
+  "bytes": 55242,
+  "sha256": "b51ae1671927ad26e170b746d76dd1d13edbf9b7d560b6b0e75a0edcaf84f00f",
+  "desc": "v3 重現檔（sha b51ae1671927…，v6 的基底）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__pos_finh_h0_test.npz",
+  "dest": ".scratch/e127/pos_finh_h0_test.npz",
+  "bytes": 226709864,
+  "sha256": "d570222b1eff6d1fcd7b7a3da4834d6d2110c3e07f29313ba99379004ea67d99",
+  "desc": "Player E127 推論輸入：逐局面向量（h0）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__pos_finh_h1_test.npz",
+  "dest": ".scratch/e127/pos_finh_h1_test.npz",
+  "bytes": 226709864,
+  "sha256": "aad298f1615004009884730c4db7d43bc7035091ac85576a7b34fb6d49429d61",
+  "desc": "同上（h1）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__t2_pos_finh_full.npz",
+  "dest": ".scratch/e112/t2_pos_finh_full.npz",
+  "bytes": 58903568,
+  "sha256": "6bdb377cb56d2f61137cbb0278bcd175582e0c573e3a01f3e9568ade70f29088",
+  "desc": "Player E112 輸入：逐局面向量（full）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__t2_pos_finh_h0.npz",
+  "dest": ".scratch/e112/t2_pos_finh_h0.npz",
+  "bytes": 58903568,
+  "sha256": "7be9dd66f90a687899235261e1d854cd3178fb5936385a7bc645f68f77fee0b6",
+  "desc": "同上（h0）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__t2_pos_finh_h1.npz",
+  "dest": ".scratch/e112/t2_pos_finh_h1.npz",
+  "bytes": 58903568,
+  "sha256": "953c8bb0c9671e4fc23299ad0980c4e79c2bf37a90f41bba038d7ef01729ea43",
+  "desc": "同上（h1）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__pe_test_pub_small.npy",
+  "dest": ".scratch/e90/r_h/pe_test_pub.npy",
+  "bytes": 3635328,
+  "sha256": "60826a85553a2f254d19036d320e4d6e1dbe9f81516530ee99539f4ce0fc21f8",
+  "desc": "小 S 每盤向量（Public）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__pe_test_priv_small.npy",
+  "dest": ".scratch/e90/r_h/pe_test_priv.npy",
+  "bytes": 3635328,
+  "sha256": "dfe77bf0d63117bc5a381aca4c679c0f752fd99108ef4861543a23f0e82beef9",
+  "desc": "小 S 每盤向量（Private）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__pe_test_pub_bigS.npy",
+  "dest": ".scratch/e99/r/pe_test_pub.npy",
+  "bytes": 3635328,
+  "sha256": "b97b2bedd3f24bf46d9acda2c0493548fb8328e0f25dde025c5ac79c47978e29",
+  "desc": "大 S（E99）每盤向量（Public）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__pe_test_priv_bigS.npy",
+  "dest": ".scratch/e99/r/pe_test_priv.npy",
+  "bytes": 3635328,
+  "sha256": "cb01afc278d8680c55973018e7f4a3c33f02a5da6dcb79a1a21ee68b6c1e404c",
+  "desc": "大 S（E99）每盤向量（Private）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__pe_test_pub_pe86.npy",
+  "dest": ".scratch/e86/r/pe_test_pub.npy",
+  "bytes": 3635328,
+  "sha256": "0e91fffe01e8b0486862b68620a742e5ad0c9a0107c7ea860670de52c63bd958",
+  "desc": "pe86 每盤向量（Public）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__pe_test_priv_pe86.npy",
+  "dest": ".scratch/e86/r/pe_test_priv.npy",
+  "bytes": 3635328,
+  "sha256": "cc3ca73f536ac86624e463e968f243850e1103b6dd4cab1cf5416bc31d1cd146",
+  "desc": "pe86 每盤向量（Private）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__Z_priv.npz",
+  "dest": ".scratch/p1111/z_t2/Z_priv.npz",
+  "bytes": 59384896,
+  "sha256": "cea6d154cde9e725d74ecf659791aeaac1c8ff732725da649e4c246431bb335d",
+  "desc": "新題 L0 特徵 Z（Private）"
+ },
+ {
+  "category": "intermediate",
+  "final": false,
+  "asset": "player_up__Z_pub.npz",
+  "dest": ".scratch/p1111/z_t2/Z_pub.npz",
+  "bytes": 59328096,
+  "sha256": "dd5b7b391131214e0f7677be61ebde0284fe3d3adef5eb899b863d2c7ffd430e",
+  "desc": "新題 L0 特徵 Z（Public）"
+ }
+]
