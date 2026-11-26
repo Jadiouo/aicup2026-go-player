@@ -98,5 +98,5 @@
 | 舊題 90,000 盤的 SE 特徵（`.scratch/e27/se/se_test_games.parquet`） | v6 融合的 SE 輸入（學校 GPU 約 1 小時） | v6 最後一步無法重跑；可用 `predict_se.py extract` 重抽 |
 | pe86 逐局面編碼器權重（`enc_*_{h0,h1,full}.pt`） | 產生每盤 128 維 pe86 向量 | 只剩它產出的向量（中間檔 `pe_test_*_pe86.npy`）；要重算需重訓編碼器（每個 12.6 分鐘，但要先有訓練端全局面抽取約 9.2 小時） |
 | 大網路 S（E99）`finh_h0`、`finh_h1` 權重 | booster 訓練池的交叉擬合向量 | 只剩 `finh_full`（Release）；測試端只用 full，booster 已訓練好 |
-| `X120_full.npy`、`G_full.npy`、`tok_full.npy`、各種 `pos_*_{trA,trB,val}.npz` | 訓練端 HSL W120 表、主幹向量、逐局面向量 | 要重訓任何網路都得先重新編碼（約 70 小時，估計值） |
+| `X120_full.npy`、`G_full.npy`、`tok_full.npy`、各種 `pos_*_{trA,trB,val}.npz` | 訓練端 HSL W120 表、主幹向量、逐局面向量 | 要重訓任何網路都得先重新編碼（整條重跑至少約 76 小時 GPU，分項相加） |
 | `humanv0.ckpt`、KataGo 網路與執行檔 | 外部資源 | 重新下載（第 3 節，附 sha256） |
