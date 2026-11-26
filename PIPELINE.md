@@ -44,6 +44,8 @@ bash scripts/experiments/e127/job_train.sh p1r cross "--steps 12000 --lr 1e-3 --
 
 （`job_*.sh` 用系統 `python3`＋torch；原作者透過本機 GPU 排隊工具 `gpujob` 與 `systemd-run` 記憶體上限執行，這兩者不是必要的。）
 
+**逐元件的訓練指令、推論指令、輸入、輸出見本頁最後一節「元件手冊」。**
+
 權重與中間檔的大小、sha256 與放置位置見[`ASSETS.md`](ASSETS.md)；Colab 版最後一步見 `colab/reproduce_final.ipynb`。
 
 ## 最後一步：指令、輸入、輸出
@@ -102,3 +104,92 @@ python final/check_old_v6.py <old_v6_800.csv> [--v3 <v3 提交檔>]
 ## 驗證設計
 
 一律以 player_id 分組切分（同一玩家不同時出現在訓練與評估）。新題沒有答案，離線用「真實候選庫偽查詢」（每人 10 盤中 6 盤當庫、4 盤當查詢）與 16 個模擬池評量。
+
+## 元件手冊：每個元件的訓練、推論、輸入、輸出
+
+上面的「步驟」表是由下到上的流程；這一節是逐元件的指令。慣例：
+
+- 指令以 repo 根目錄為工作目錄；CPU 腳本用 `PYTHONPATH=src:scripts:. .venv/bin/python`，標「GPU」的用系統 `python3`＋torch（`requirements-gpu.txt`）。完整參數看各腳本頂端 docstring；`.scratch/`、`data/` 的位置見 README「路徑約定」。
+- 「報告名稱」是報告正文用的描述性名稱；「內部代號」是程式與紀錄裡的編號。
+- 原作者用本機 GPU 排隊工具與 `systemd-run` 記憶體上限包住重工作，這兩者不是必要的。
+
+### 資料與特徵（多半無訓練）
+
+**1. 手工特徵（L0）** — 無訓練。
+- 抽取：`.venv/bin/python scripts/build_l0_cache.py [--jobs 14] [--chunk 20000]`；測試端由 `scripts/oneoff/e38_final.py predict` 即時呼叫 `src/gogame/features_l0.py`，結果存 `.scratch/p1111/z_t2/Z_{pub,priv}.npz`。
+- 輸入：官方棋譜（`data/training*`、`data/contest_1111/`）。輸出：`data/cache/l0/{dense.parquet,sparse.npz}`。
+- 官方測試題的欄位與 id 整理：`.venv/bin/python scripts/oneoff/p1111_inspect.py --data-dir data/contest_1111`（寫 `.scratch/p1111/normalized/`）。
+
+**2. 訓練資料包（E29 bundle）** — 無訓練。`.venv/bin/python -m scripts.experiments.e29.prep_bundle` → `.scratch/e29/bundle/{X.npy,aux.npz,manifest.json}`（非保留集玩家的逐盤特徵與折角色；後面的 `e36`、`e40_finalprep`、`e55_prep` 都讀它）。
+
+**3. HumanSL 落子統計（前 60 手／前 120 手）** — 外部 KataGo HumanSL，無訓練。
+- 抽取（訓練端）：`bash scripts/katago/scan_setup.sh`（下載並以 sha256 釘選 KataGo 與網路）→ `scripts/katago/scan_runner.py`（前 60 手）／`scripts/experiments/e34/scan_runner_w2.py`（第 61–120 手），參數見兩者 docstring；合成訓練端 W120 表：`python -m scripts.experiments.e36.build_w120_full old|new|train` → `.scratch/e36/bundle/X120_full.npy`。
+- 抽取（測試端）：`GOGAME_COLOR_SEMANTICS=actual .venv/bin/python scripts/oneoff/p1111_hsl_prepare.py data/test_scan_p1111` → `scripts/predict_hsl.py --root data/test_scan_p1111 run --backend school ...` → `scripts/predict_hsl.py --root ... features`；後半盤合併：`.venv/bin/python scripts/oneoff/e41_late_merge.py` → `data/test_scan_p1111/hsl120_test_games.parquet`（uid＋104 欄）。
+- 輸入：SGF。輸出：逐手機率、名次、熵 → 逐盤 104 欄。
+
+**4. KataGo 主幹向量（逐盤）** — 外部預訓練網路的內部啟動值，無訓練。E52→E56→E62→E69 四代，每代「CPU 準備局面＋GPU 抽向量」：
+- 前半盤、6 局面（E52）：`.venv/bin/python scripts/oneoff/e52_kata_prep3.py`；GPU `E52_KDIR=kata3 python3 scripts/oneoff/e52_kata_trunk2.py`。
+- 前半盤、12 局面、多層（E56）：`.venv/bin/python scripts/oneoff/e56_prep.py --set final`；GPU `python3 scripts/oneoff/e56_trunk.py --set final`。
+- 後半盤（E62）：`e62_prep.py --set final`；GPU `e62_trunk.py --set final`。
+- 多區塊 3/6/12/15（E69）：`e69_prep.py --set final`；GPU `e69_trunk.py --set final`。
+- 輸入：SGF、KataGo `b18c384nbt-humanv0.ckpt`（外部，見 ASSETS.md）。輸出：`.scratch/e52/kata3/`、`.scratch/e56/final/`、`.scratch/e62/final/`、`.scratch/e69/final/` 下的 `blk{i}_gv.npy`（逐盤向量）。編碼器 `scripts/experiments/e13/encode.py`。
+
+### 神經網路
+
+**5. 逐局面棋風編碼器（pe86；內部代號 E77→E80→E86）** — 訓練（6 個：全部／甲半／乙半，各有「模擬池」與「最終」兩組；最終用 3 個）。
+- 準備：`python scripts/oneoff/e77_prep_full.py --set pca`（PCA 擬合局面）→ GPU `python3 scripts/oneoff/e77_gpu_full.py --sets pca`（寫 `.scratch/e77/pca_full.npz`，PCA 96 維；E80／E86 取前 64 維）；E79 前後視窗 24 個 token：`e79_items.py`、`e79_prep_local.py`、GPU `e79_gpu.py`、`e79_tok.py`；`e80_meta.py`、`e80_prep.py`、GPU `e80_extract.py`；E86 全局面：`e86_items.py`、`e86_meta.py`，再 `e86_prep.py STAGE ITEMS.pkl`＋GPU `e86_gpu.py STAGE`，或 Colab 版 `e86_colab_prep.py`。
+- 訓練＋匯出（最終）：`python scripts/oneoff/e86_colab_enc.py [--only sim,final]`（一次訓練六個編碼器並匯出）；較早的 E80 版 `python3 scripts/oneoff/e80_enc.py sim|final [--only h0,h1,full]`（24 個 token）；編碼器定義與訓練函式 `scripts/oneoff/e77_enc.py`。
+- 推論：同上腳本匯出 `pe_final_h0.npy`、`pe_final_h1.npy`（訓練池用）與 `pe_test_{pub,priv}.npy`（測試用）。
+- 輸入：全部己方局面的主幹向量（PCA-64）。輸出：每盤 128 維單位向量。權重：`enc_*.pt`（已不在，只剩向量；見 ASSETS.md）。
+
+**6. 認人網路（S；內部代號 E89→E90，三個：`finh_full`、`finh_h0`、`finh_h1`）** — 10 區塊×128 通道 ResNet。
+- 資料：`PYTHONPATH=src:. .venv/bin/python scripts/experiments/e90/make_data.py union|test|meta`（`u_games.npz`、`rosters.npz`、`t_games.npz`、`export_spec*`）→ `.venv/bin/python scripts/experiments/e90/make_data_h.py build`，再 `python scripts/experiments/e90/make_data_h.py concat [--dir DIR]`（加入保留集的盤，得 `uh_games.npz`、`rosters_h.npz`、`export_spec_h.*`）。自寫棋盤引擎 `scripts/experiments/e89/fastboard.py`（numba）。
+- 訓練（GPU，可續跑）：`python scripts/experiments/e90/driver_e90h.py --roster finh_full --root DIR --accum 2 --workers 8 --export auto`（`finh_h0`、`finh_h1` 同理；DIR 內放 `uh_games.npz rosters_h.npz t_games.npz export_spec_h.json export_spec_h.npz`）。驅動器呼叫 `train_e90h.py`（20 輪、種子 0）。
+- 推論（逐盤向量）：訓練結束時 `--export auto` 一併寫 `vec_*.npz`；整理成 booster 用的檔：`python scripts/experiments/e90/assemble_pe_h.py DIR .scratch/e90/r_h` → `pe_final_h0.npy`、`pe_final_h1.npy`、`pe_test_{pub,priv}.npy`。逐局面向量匯出另見元件 9。
+- 輸入：約 100 萬盤的己方局面 18 個 19×19 平面。輸出：`finh_*/final_model.pt`（權重）、每盤 128 維向量。
+
+**7. 大型認人網路（E99，16 區塊×224 通道，三個）** — 只當候選池分類器的向量來源，不進重排模型。
+- 訓練（GPU，可續跑；與元件 6 同資料）：`python scripts/experiments/e99/driver_e99.py --roster finh_full --root DIR --epochs 12`（`finh_h0`、`finh_h1` 同理；DIR 內同元件 6 的 `uh_games.npz`、`rosters_h.npz`、`export_spec_h.*`；每網路 `--accum 8`、種子 0 由驅動器固定）。訓練本體 `scripts/experiments/e99/train_e99.py`（元件 6 的 `train_e90h.py` 的複本，只改規模）。
+- 推論（逐盤向量）：訓練時 `--export auto` 寫 `vec_*.npz`；`python scripts/experiments/e99/assemble_pe_e99.py [NETS_DIR] [OUT_DIR]`（預設 `.scratch/e99/nets` → `.scratch/e99/r`）。
+- 輸入：同元件 6。輸出：`.scratch/e99/nets/finh_full/final_model.pt`（Release 檔名 `finh_bigS_full__final_model.pt`）、`.scratch/e99/r/pe_test_{pub,priv}.npy`。
+- 另：`e99_final.py` 是「用大網路取代／加入小網路」重排模型（v7r，兩版都沒贏、未上傳）的產檔程式，`test_feats3.py` 是它的特徵測試；最終管線不用。
+
+**8. 深度度量編碼器（E40／E41，兩個 MLP 編碼器×全部／甲半／乙半）** — episodic 對比學習。
+- 準備：`.venv/bin/python scripts/oneoff/e40_finalprep.py`（最終 Z 空間與標準化後的 HumanSL；Z 若被清掉用 `e41_finz.py` 重建）→ `e40_fin_inputs.py`、`e41_fin_inputs120.py`（測試端輸入）。
+- 訓練＋嵌入（GPU）：`python3 scripts/oneoff/e40_deep_mlp.py --data fin --hsl 1 --out fin_full --half -1`（前 60 手 HumanSL 版）、`python3 scripts/oneoff/e41_deep_fin.py --data fin --hsl 2 --out fin120_full --half -1`（前 120 手版）；`--half 0|1` 訓練甲半／乙半版（設定：30,000 步、hidden 4096、P=512、dim 256，見 E40／E41 紀錄）。兩個編碼器串接除以 √2 得集成嵌入：`python scripts/oneoff/e50_ens.py --w60-dir .scratch/e40 --w60-tag fin --out finens --out-dir .scratch/e41`。
+- 輸入：L0 Z＋標準化 HumanSL。輸出：`enc_*.pt`、`emb_finens_{h0,h1}_cap.npy`、`emb_finens_full_test_{pub,priv}.npy`。注意：甲乙半分組檔 `.scratch/e40/fin/halves.npz` 在原專案是當時一次性指令建立的，沒有獨立腳本。
+
+### 統計模型與重排
+
+**9. 白化線性判別度量（LDA 度量）＋召回融合** — 無神經網路；在重排模型訓練時擬合（同一支腳本，見元件 10）。L0 LDA（150 維、ridge 3e-2）、HumanSL LDA（15 維）、主幹向量 LDA；以馬氏距離的 z 分數和取前 K=40 位候選人。程式：`scripts/oneoff/e38_final.py`、`e39_final.py`（交叉擬合分組）。
+
+**10. 重排模型（LightGBM lambdarank，v7q；792 特徵）** — 訓練＋推論在同一支腳本。
+- 訓練＋測試端預測：`PYTHONPATH=src:scripts:. .venv/bin/python scripts/experiments/e90/e90_final.py make --s-dir .scratch/e90/r_h`（經 `e90_final_core.py` 使用 `scripts/oneoff/e86_final.py` 的訓練與預測碼：60 個模擬池×400 題×40 候選人＝96 萬列、600 輪、種子 8；Public／Private 池各自預測）。`e90_final.py preflight --s-dir ...` 先做不吃記憶體的檢查。
+- 輸入：元件 1、3、4、5、6、8 的輸出；`.scratch/e90/r_h`（認人網路向量）；`.scratch/e86/r`（逐局面編碼器向量）。輸出：`.scratch/e90/final/make/real_v7q_S_{pub,priv}.npz`（`e`、`top`、`pool`、`qids`）、`models/v7q_S.{txt,json}` 與 5 個度量 npz。
+
+**11. 局面對局面比對（E112，核密度；無訓練）**
+- 匯出逐局面向量（GPU）：`bash scripts/experiments/e112/job_t2_export.sh`（三個認人網路 × 測試棋局的 12 個開局局面，內部呼叫 `e112_export.py --pset P12`）。
+- 推論：`bash scripts/experiments/e112/job_real_compute.sh`（＝ `python3 scripts/experiments/e112/e112_real.py compute`，GPU，β=20）。
+- 輸入：`t2_pos_finh_{full,h0,h1}.npz`、`real_v7q_S_*.npz`。輸出：`.scratch/e112/final/real_X_{pub,priv}.npz`（400×600）。
+
+**12. 候選池分類器（E123，600 類邏輯迴歸）**
+- 訓練＋推論（每個池各擬合一次，CPU，需 scikit-learn 1.9.1）：`PYTHONPATH=src:scripts:. .venv/bin/python scripts/experiments/e123/e123_make.py real`（C=1.0、lbfgs；向量＝小認人網路＋大型認人網路＋逐局面編碼器各自 L2 後串接再 L2、×8）。
+- 輸入：`.scratch/{e90/r_h,e99/r,e86/r}/pe_test_{pub,priv}.npy`、`real_v7q_S_*.npz`。輸出：`.scratch/e123/final/real_Xlr_{pub,priv}.npz`。無權重檔（每次在候選庫上現場擬合）。
+
+**13. 成對比對網路（E127，兩個：h0、h1；406,024 參數）**
+- 訓練資料：`.venv/bin/python scripts/experiments/e127/make_rows.py`（選訓練／留出玩家與棋局，寫 `.scratch/e127/rows_*.npy`）→ GPU `bash scripts/experiments/e127/job_export.sh`（用兩個半數玩家認人網路匯出逐局面向量 `pos_*_{val,trA,trB,test}.npz`）。
+- 訓練（GPU，兩網路依序）：`bash scripts/experiments/e127/job_train.sh p1r cross "--steps 12000 --lr 1e-3 --lr_p 3e-4 --B 8 --M 24,58 --mon_every 1000 --ckpt_every 2000 --cand_sa 1 --qry_sa 1 --drop 0.1 --resid 1"`（本體 `e127_train.py`、模型 `e127_model.py`、資料 `e127_data.py`）。
+- 推論（對真實測試題，GPU）：`bash scripts/experiments/e127/job_real_x.sh real`（`real_x.py`；兩網路各自列標準化後平均）。
+- 輸入：`pos_finh_h{0,1}_test.npz`、`sigma_finh_h{0,1}.npy`、`real_v7q_S_*.npz`。輸出：`.scratch/e127/p1r_finh_h{0,1}/last.pt`（權重）、`.scratch/e127/final/real_Xp1r_{pub,priv}.npz`。
+
+**14. 一對一先驗（CSLS，k=3、α=.5；無訓練）** — 函式 `csls_qq`（`scripts/lib/e81_lib.py`），在最後一步內呼叫；E110 的偽查詢驗證與 k 的選擇：`scripts/experiments/e110/{e110_t2dump,e110_make,e110_an,e110_feats2}.py`、`bash scripts/experiments/e110/run_dump.sh`。
+
+**15. 最終組合** — 見上節「最後一步」：`.venv/bin/python final/make_player_final.py --work-dir <WORK_DIR> --out out/player_v7x.csv`（c = rowz(e) + 0.5·X_e112 + 1.0·X_lr + 0.35·X_p1r → CSLS → 前 5 → 與舊題 800 列拼接）；原型 `scripts/experiments/e127/make_final.py`；格式檢查 `scripts/check_submission.py`、`scripts/oneoff/p1111_assemble.py`。
+
+**16. 舊題管線（基底版，v6）** — 見上節「舊題 800 列（v6）」的七步表：訓練 `scripts/predict.py train --task player --player-model e04v2 --include-holdout`（E04v2 重排模型，`src/gogame/player_rerank.py`）；強度估計器特徵推論 `scripts/predict_se.py extract ...`（外部權重）；融合與轉導解碼 `scripts/oneoff/e27_player_fusion.py fuse`。
+
+### 本 repo 找不到程式的部分
+
+- `.scratch/e40/fin/halves.npz`（深度度量編碼器的甲乙半分組）：原專案當時以一次性指令建立，沒有獨立腳本（分組邏輯＝`scripts/oneoff/e39_final.py` 的 `groups_final`＋其餘玩家）。
+- Colab／學校／學長主機的工作排程與監看腳本（各平台的 `*_ctl.py`、`watch_*.sh`、`run_*.sh`）與個人機器設定：不公開；平台無關的執行本體都在上表。
+- 舊題管線的訓練端強度估計器表（`se_uid.parquet`）與兩個度量檔：中間檔已刪（見「舊題 800 列」），抽取程式在。
