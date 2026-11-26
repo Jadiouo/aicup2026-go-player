@@ -42,7 +42,7 @@ Release 沒有資料夾，所以清單裡的資產名就是 Release 上的檔名
 
 **注意**
 - `.pkl` 檔（pickle）載入時會執行程式碼；請只使用本 repo Release 的檔案，並先核對 sha256。
-- 以 KataGo HumanSL 檢查點微調的權重（Rank 的 `final_s0`、`ft4_s0`）屬於衍生自 HumanSL 網路的模型，使用時請一併遵守 KataGo Neural Network License（見本檔第 3 節）。
+- 這 17 個檔都是我們自己從頭訓練或擬合的（認人網路從隨機初始化開始，LightGBM、度量矩陣、溫度等是自己擬合的），不含 KataGo 或其他第三方權重。Player 管線用到的 KataGo HumanSL 只是特徵來源（外部程式產生的中間檔），原始網路不在 Release 裡，要自己下載（第 3 節）。
 
 ## 2. 官方資料衍生中間檔（僅提供主辦方；不在 repo、不在 Release）
 

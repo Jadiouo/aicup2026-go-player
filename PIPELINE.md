@@ -363,7 +363,7 @@ PYTHONPATH=src:scripts:. .venv/bin/python scripts/experiments/e123/e123_make.py 
 ### 本 repo 找不到程式的部分
 
 - `.scratch/e40/fin/halves.npz`（深度度量編碼器的甲乙半分組）：原專案當時用一次性指令建立，沒有獨立腳本。分組邏輯等於 `scripts/oneoff/e39_final.py` 的 `groups_final` 加其餘玩家。
-- Colab、學校和學長主機的工作排程與監看腳本（各平台的 `*_ctl.py`、`watch_*.sh`、`run_*.sh`）和個人機器設定：不公開。平台無關的執行本體都在上面的表裡。
+- Colab 和其他工作站的工作排程與監看腳本（各平台的 `*_ctl.py`、`watch_*.sh`、`run_*.sh`）和個人機器設定：不公開。平台無關的執行本體都在上面的表裡。
 - 舊題管線的訓練端強度估計器表（`se_uid.parquet`）與兩個度量檔：中間檔已刪（見「舊題 800 列」），抽取程式還在。
 
 ## 已知限制
